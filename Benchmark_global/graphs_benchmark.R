@@ -18,6 +18,7 @@
 #####    0.3124714     0.1430057     0.2861305     0.1755225 
 ## Setting colors and point types for graphs throughout the script
 colorCode=c(UMAP="#E41A1CCC",tSNE="#377EB8CC",FItSNE="#4DAF4ACC","FItSNE_le"="#00441BCC","scvis"="#984EA3")
+legendCode=list(UMAP_fixed = "UMAP, LE init", UMAP_random="UMAP, random init", FItSNE_fixed="FIt-SNE, PCA init", FItSNE_random="FIt-SNE, random init")
 pchCode=c(Han_400k=0,Wong=2,Samusik=4)
 source("../utils.R") ## Loads some misc functions
 
@@ -125,11 +126,11 @@ rs=sapply(datasets,function(dataset){
         text(x=par("usr")[1],y=par("usr")[4],labels=paste("r=",sprintf('%.2f', r),sep=""),pos=4,xpd=NA)
 
         ## Report algorithms and datasets
-        if(alg=="UMAP"){
+        if(alg=="UMAP_fixed"){
             title(main=dataset,line=1,xpd=NA)
         }
         if(dataset==datasets[1]){
-            title(ylab=alg,cex.lab=par()$cex.main,font.lab=2,xpd=NA,line=1)
+            title(ylab=unlist(legendCode[alg]),cex.lab=par()$cex.main,font.lab=2,xpd=NA,line=1)
         }
 
         print(r)
@@ -210,7 +211,7 @@ for(dataset in datasets){
             dr_src[[alg]],
             col=makeTransparent(colors[[alg]],100)
         )
-        legend(x="topleft",legend=alg,cex=12,text.font=2,bty="n")
+        legend(x="topleft",legend=legendCode[alg],cex=12,text.font=2,bty="n")
         ## Bottom part: plot the embedding of subsamples using the same color as for the full dataset
         for(i in w){
             for(j in 1:n_replicates){
@@ -298,6 +299,7 @@ for(dataset in datasets){
 ## Summarizing across replicates
 means=apply(replicability[,,,],c(1,2,3),mean) ## Average
 sds=apply(replicability[,,,],c(1,2,3),sd) ## Standard deviation
+means[dim(means)[1],,]
 
 ## Graph output
 png("./graphs/Replicability_of_embeddings.png",res=300,height=2000,width=2000)
@@ -309,17 +311,16 @@ for(dataset in dimnames(means)[[3]]){
         ## Barplots and error bars
         bp=barplot(means[i,,dataset],col=colorCode[dimnames(means)[[2]]],bty="n",ylim=c(0,1.2),names.arg=FALSE,yaxt="n")
         segments(x0=bp,y0=means[i,,dataset]-sds[i,,dataset],y1=means[i,,dataset]+sds[i,,dataset])
-
         ## Annotations
         if(dataset==dimnames(means)[[3]][1]){
             axis(side=2,at=seq(0,1,by=0.5),labels=c(0,0.5,1),las=1,line=0)
             title(ylab=paste(i,ifelse(i==dimnames(means)[[1]][1]," cells",""),sep=""),xpd=NA,cex.lab=1,line=5)
         }
         if(i==dimnames(means)[[1]][1]){
-            title(main=dataset,line=0,cex.main=2,xpd=NA)
+            title(main=dataset,line=0,cex.main=1.5,xpd=NA)
         }
         if(i==tail(dimnames(means)[[1]],1)){
-            text(x=bp,y=line2user(0.5,1),labels=dimnames(means)[[2]],col=colorCode[dimnames(means)[[2]]],font=2,xpd=NA,cex=1.5,srt=270,adj=c(0,0.5))
+            text(x=bp,y=line2user(0.5,1),labels=unlist(legendCode[dimnames(means)[[2]]]),col=colorCode[dimnames(means)[[2]]],font=2,xpd=NA,cex=0.9,srt=270,adj=c(0,0.5))
         }
     }
 }
