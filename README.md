@@ -1,1 +1,3 @@
-# DR_benchmark_initialization
+# Re-analyzing Becht et al. (2019) with different initializations
+
+This repository contains the code from Becht et al. which has been modified to compare t-SNE and UMAP using both random and informative (i.e. PCA-based or Laplacian eigenmaps-based) initializations. The original authors provided their code [here](https://github.com/ebecht/DR_benchmark), and the code+data [here](https://figshare.com/s/9c3a0136f12b97f1dadd). This repository only includes the R files (as only the R files were changed for the re-analysis). To reproduce the results, it is best to download the code+data link above, and then copy these R files into the directory structure.  
